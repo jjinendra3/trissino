@@ -29,7 +29,7 @@ export function drawWrappedText(
   lines.push(line);
 
   let lineHeight = fontSize * 1.2;
-  if (lines.length * lineHeight + 10 > maxHeight) {
+  if (lines.length * lineHeight + 15 > maxHeight) {
     return drawWrappedText(
       ctx,
       text,
