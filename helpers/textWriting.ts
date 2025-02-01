@@ -30,7 +30,6 @@ export function drawWrappedText(
 
   let lineHeight = fontSize * 1.2;
   if (lines.length * lineHeight + 10 > maxHeight) {
-    console.log("Text does not fit in the box");
     return drawWrappedText(
       ctx,
       text,

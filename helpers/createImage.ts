@@ -69,8 +69,7 @@ export const imageCreator = async ({ competitors, fields }: Battle) => {
     base64Imag,
     { encoding: "base64" },
     function (err) {
-      console.log("File created");
     },
   );
-  return base64Imag;
+  return {base64Imag,base64Image};
 };

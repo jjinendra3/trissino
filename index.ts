@@ -6,27 +6,30 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 import { imageCreator } from "./helpers/createImage";
-import { uploadToImgur } from "./helpers/uploadImage";
 import { FIELD_TYPES } from "./utils/constants";
 import { type Battle } from "./utils/types";
+import { upload } from "./helpers/uploadImage";
 
 app.post("/start", async (req, res) => {
   try {
     const { competitors, fields, options }: Battle = req.body;
+    if(!fields || fields.length === 0){
+      return res.status(400).send("Invalid Fields Array");
+    }
     if (!fields.every((field) => FIELD_TYPES.includes(field))) {
       return res.status(400).send("Invalid field type");
     }
     if (!competitors || competitors.length === 0 || competitors.length > 3) {
       return res.status(400).send("Invalid competitors");
     }
-    const imageBase64 = await imageCreator({ competitors, fields });
-    if (options !== undefined) {
-      console.log(options);
+    const {base64Imag,base64Image} = await imageCreator({ competitors, fields });
+    if (options) {
       if (options.format === "url") {
-        console.log("Uploading image to storage");
+        const url=await upload(base64Imag);
+        return res.status(200).send(url.data.data.url);
       }
     }
-    return res.status(200).send(imageBase64);
+    return res.status(200).send(base64Image);
   } catch (error) {
     console.log(error);
     return res.status(500).send("Internal Server Error");
