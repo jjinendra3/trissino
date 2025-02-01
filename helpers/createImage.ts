@@ -1,18 +1,22 @@
 import { createCanvas } from "canvas";
 import { Battle } from "../utils/types";
+import { drawWrappedText } from "./textWriting";
 const fs = require("fs");
-export const imageCreator = async({ competitors, fields }: Battle) => {
+const text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ".repeat(
+  10,
+);
+export const imageCreator = async ({ competitors, fields }: Battle) => {
   const columns = ["Anchor", ...competitors];
-  const rowsArray=[...fields]
+
   const cols = columns.length;
-  const rows = rowsArray.length;
-  const cellWidth = 1280/(cols+1);
-   const cellHeight = 720/rows;
+  const rows = fields.length;
+  const cellWidth = 1280 / (cols + 1);
+  const cellHeight = 720 / rows;
   const minWidth = 1280;
-   const minHeight = 720;
+  const minHeight = 720;
 
   let width = minWidth;
-  let height =  minHeight;
+  let height = minHeight;
 
   const canvas = createCanvas(width, height);
   const ctx = canvas.getContext("2d");
@@ -27,7 +31,7 @@ export const imageCreator = async({ competitors, fields }: Battle) => {
     ctx.lineTo(i * cellWidth, height);
   }
   ctx.moveTo(0, 25);
-ctx.lineTo(width, 25);
+  ctx.lineTo(width, 25);
   for (let i = 0; i <= rows; i++) {
     ctx.moveTo(0, i * cellHeight);
     ctx.lineTo(width, i * cellHeight);
@@ -36,16 +40,30 @@ ctx.lineTo(width, 25);
 
   ctx.fillStyle = "#000000";
   ctx.font = "16px Arial";
-  await ctx.fillText("Headings", 20,20);
- 
-  rowsArray.forEach((field, i) => {
-    ctx.fillText(field, 20, (i) * cellHeight +50);
+  await ctx.fillText("Headings", 20, 20);
+  fields.forEach((field, i) => {
+    ctx.fillText(field, 20, i * cellHeight + 50);
   });
   columns.forEach((comp, i) => {
     ctx.fillText(comp, (i + 1) * cellWidth + 10, 20);
   });
+  let fixFontSize = [];
+  columns.forEach((comp, i) => {
+    fields.forEach((field, j) => {
+      drawWrappedText(
+        ctx,
+        text,
+        (i + 1) * cellWidth + 5,
+        j == 0 ? j * cellHeight + 40 : j * cellHeight + 10,
+        cellWidth - 5,
+        cellHeight - 20,
+        fixFontSize,
+      );
+    });
+  });
+
   const base64Image = canvas.toDataURL("image/png");
-  let base64Imag = base64Image.split(';base64,').pop();
+  let base64Imag = base64Image.split(";base64,").pop();
   await fs.writeFileSync(
     "image.png",
     base64Imag,
@@ -54,4 +72,5 @@ ctx.lineTo(width, 25);
       console.log("File created");
     },
   );
+  return base64Imag;
 };
