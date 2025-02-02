@@ -1,3 +1,8 @@
+import * as dayjs from 'dayjs'
+import * as utc from 'dayjs/plugin/utc'
+import * as timezone from 'dayjs/plugin/timezone'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -9,6 +14,9 @@ import { imageCreator } from "./helpers/createImage";
 import { FIELD_TYPES } from "./utils/constants";
 import { type Battle } from "./utils/types";
 import { upload } from "./helpers/uploadImage";
+app.head("/", (req, res) => {
+  res.status(200).send("OK");
+});
 
 app.post("/start", async (req, res) => {
   try {
@@ -23,13 +31,17 @@ app.post("/start", async (req, res) => {
       return res.status(400).send("Invalid competitors");
     }
     const {base64Imag,base64Image} = await imageCreator({ competitors, fields });
+    let response={
+      image:base64Image,
+      timeStamp:dayjs(new Date()).format('YYYY-MM-DD')
+    }
     if (options) {
       if (options.format === "url") {
         const url=await upload(base64Imag);
-        return res.status(200).send(url.data.data.url);
+        response.image=url.data.data.url;
       }
     }
-    return res.status(200).send(base64Image);
+    return res.status(200).send(response);
   } catch (error) {
     console.log(error);
     return res.status(500).send("Internal Server Error");
