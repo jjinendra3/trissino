@@ -2,9 +2,8 @@ import { createCanvas } from "canvas";
 import { Battle } from "../utils/types";
 import { drawWrappedText } from "./textWriting";
 const fs = require("fs");
-const text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ".repeat(
-  10,
-);
+const text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+//Character Limit of the assignment
 export const imageCreator = async ({ competitors, fields }: Battle) => {
   const columns = ["Anchor", ...competitors];
 
